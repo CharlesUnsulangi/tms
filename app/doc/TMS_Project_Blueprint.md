@@ -1,8 +1,16 @@
 # TMS (Trucking Management System) - Project Blueprint
 
 **Tanggal:** 17 November 2025  
-**Versi:** 1.0  
-**Status:** Planning & Design Phase
+**Last Updated:** 18 November 2025  
+**Versi:** 2.0  
+**Status:** Planning & Design Phase - UPDATED with Dispatcher & Accounting Integration
+
+**📚 Related Documentation:**
+- 📄 **Dispatcher & Accounting**: `Transaction_Tables_Dispatcher_Accounting.md`
+- 📄 **Shuttle Document Flow**: `Shuttle_Dispatcher_Document_Flow.md`
+- 📄 **Tariff Management**: `Tariff_Structure_Analysis.md`
+- 📄 **Tanker Operations**: `Tanker_Truck_Volume_Measurement.md`
+- 📄 **Database Design**: `Database_Transaction_Tables_Plan.md`
 
 ---
 
@@ -19,6 +27,7 @@ Sistem manajemen logistik terintegrasi untuk perintah, penjadwalan, monitoring p
    - **Mode Hybrid:** Kombinasi planning + ad-hoc (mixed client)
    - Planning mingguan dengan 12 time windows per hari
    - Backhaul management untuk profitabilitas
+   - **Document Flow** ⭐ NEW: CO → DN → BTB tracking (see `Shuttle_Dispatcher_Document_Flow.md`)
    
 2. **Multi-Point FMCG:** Satu truck mengunjungi banyak titik pengiriman
    - Route optimization & grouping
@@ -29,6 +38,13 @@ Sistem manajemen logistik terintegrasi untuk perintah, penjadwalan, monitoring p
    - Quick assignment (first available)
    - Premium pricing
    - Flexible scheduling
+
+4. **Tanker Operations** ⭐ NEW: Volume-based transport (water, fuel, chemicals)
+   - Flowmeter measurement at loading & unloading
+   - Charge based on delivered volume (not trip)
+   - Variance tolerance tracking (±2%)
+   - Example: Water tanker 10KL @ Rp 50/liter
+   - See `Tanker_Truck_Volume_Measurement.md` for details
 
 ### 1.3 Fitur Utama
 
@@ -41,11 +57,25 @@ Sistem manajemen logistik terintegrasi untuk perintah, penjadwalan, monitoring p
 - Availability calendar (driver, truck, helper)
 
 **Dispatcher Operations:**
+- **Dispatch Order as "Surat Perintah Jalan" (SPJ)** ⭐ NEW
+  - Main transaction record (`tr_tms_dispatcher_main`)
+  - Contains pricing, costs, uang jalan, uang jasa
+  - Auto-triggers accounting transactions
+  - See `Transaction_Tables_Dispatcher_Accounting.md`
 - Real-time adjustment (driver sick, truck rusak, route change)
 - Complete audit trail untuk semua perubahan
 - Approval workflow (auto-approval vs manager approval)
 - Quick reassignment dengan driver suggestion
 - Multi-channel notification (app, SMS, WA)
+
+**Document Management** ⭐ NEW:
+- **Serah Terima Dokumen**: Dispatcher → Driver (SPJ, CO)
+- **DN (Delivery Note)**: From supplier at loading
+- **BTB (Berita Terima Barang)**: From customer at delivery  
+- **Return Dokumen**: Driver → Dispatcher (originals required)
+- Photo upload & verification workflow
+- Digital archive dengan retention policy
+- See `Shuttle_Dispatcher_Document_Flow.md`
 
 **Driver Communication:**
 - Mobile driver app (Android/iOS) sebagai primary channel
@@ -55,6 +85,18 @@ Sistem manajemen logistik terintegrasi untuk perintah, penjadwalan, monitoring p
 - Pre-trip inspection checklist
 - SMS fallback untuk driver tanpa smartphone
 
+**Tariff & Pricing Management** ⭐ NEW:
+- **Many-to-many tariff structure** (Client × Route × Truck Type)
+- **Multiple pricing models**:
+  - TRIP-based: Rp 800K per trip (shuttle)
+  - VOLUME-based: Rp 50 per liter (tanker)
+  - DISTANCE-based: Rp 12K per km (ad-hoc)
+  - WEIGHT-based: Rp 150 per kg (general cargo)
+  - TIME-based: Rp 100K per hour (rental)
+- Dynamic pricing (time window surcharges, volume discounts)
+- Contract management with validity periods
+- See `Tariff_Structure_Analysis.md`
+
 **Cost Management:**
 - Client-specific pricing (contract vs spot rate)
 - Truck type & cargo type pricing matrix
@@ -63,6 +105,19 @@ Sistem manajemen logistik terintegrasi untuk perintah, penjadwalan, monitoring p
 - E-toll card integration dengan auto top-up
 - Fuel card management dengan variance tracking
 - Digital settlement dengan accountability
+
+**Accounting Integration** ⭐ NEW:
+- **Customer Invoice (AR)**: Auto-generated setelah POD verified
+  - Table: `tr_acc_tms_transaksi_sales`
+  - Invoice with PPN 11%
+  - Payment tracking (NET30, NET45, NET60)
+  - Overdue management
+- **Driver Payments (AP)**:
+  - **Uang Jalan** (Cash Advance): Disbursed saat dispatch approved
+  - **Uang Jasa** (Driver Fee): Paid setelah trip completed
+  - Table: `tr_acc_tms_transaksi_kasir`
+  - Reconciliation dengan bukti kwitansi
+- See `Transaction_Tables_Dispatcher_Accounting.md`
 
 **Monitoring & Tracking:**
 - Dual GPS tracking (Mobile app + GPS device)
@@ -81,13 +136,22 @@ Sistem manajemen logistik terintegrasi untuk perintah, penjadwalan, monitoring p
 
 ### 1.4 Key Differentiators
 
-✅ **Flexible Planning:** Support 3 client types (contract planning, spot ad-hoc, hybrid)
-✅ **Real-time Adjustment:** Dispatcher bisa adjust apapun real-time dengan full audit trail
-✅ **Mobile Driver App:** Complete driver experience dari assignment sampai settlement
-✅ **Dual GPS Tracking:** Mobile app (mandatory) + GPS device (backup/validation)
-✅ **Cashless Operations:** E-toll card + fuel card, minimal cash handling
-✅ **Client-specific Pricing:** Same route beda client beda harga (contract vs spot)
-✅ **Complete Transparency:** Digital record untuk semua transaksi, zero paper trail
+✅ **Flexible Planning:** Support 3 client types (contract planning, spot ad-hoc, hybrid)  
+✅ **Real-time Adjustment:** Dispatcher bisa adjust apapun real-time dengan full audit trail  
+✅ **Mobile Driver App:** Complete driver experience dari assignment sampai settlement  
+✅ **Dual GPS Tracking:** Mobile app (mandatory) + GPS device (backup/validation)  
+✅ **Cashless Operations:** E-toll card + fuel card, minimal cash handling  
+✅ **Client-specific Pricing:** Same route beda client beda harga (contract vs spot)  
+✅ **Complete Transparency:** Digital record untuk semua transaksi, zero paper trail  
+
+**⭐ NEW Features (18 Nov 2025):**  
+✅ **Dispatch as SPJ (Surat Perintah Jalan):** Main transaction dengan auto accounting integration  
+✅ **Document Workflow:** CO → DN → BTB tracking dengan photo verification  
+✅ **Many-to-Many Tariff:** Client × Route × Truck Type dengan dynamic pricing  
+✅ **Multiple Pricing Models:** TRIP, VOLUME, DISTANCE, WEIGHT, TIME-based  
+✅ **Tanker Operations:** Volume measurement dengan flowmeter, charge per liter  
+✅ **Auto Accounting Integration:** Dispatch → Invoice + Uang Jalan + Uang Jasa  
+✅ **Complete Document Archive:** Scan, retention policy, audit trail
 
 ---
 

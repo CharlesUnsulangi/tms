@@ -1,8 +1,15 @@
 # TMS - Complete Master Data Structure
-## (Point, Client, Product, Route with Dynamic Pricing)
+## (Point, Client, Product, Route, Tariff with Dynamic Pricing)
 
 **Tanggal:** 17 November 2025  
-**Status:** Design Phase - CORRECTED & ENHANCED  
+**Last Updated:** 18 November 2025  
+**Status:** Design Phase - UPDATED with Tariff & Tanker Support  
+
+**📚 Related Documentation:**
+- 📄 **Tariff Structure**: `Tariff_Structure_Analysis.md`  
+- 📄 **Tanker Operations**: `Tanker_Truck_Volume_Measurement.md`  
+- 📄 **Transaction Tables**: `Database_Transaction_Tables_Plan.md`  
+- 📄 **Dispatcher System**: `Transaction_Tables_Dispatcher_Accounting.md`  
 
 ---
 
